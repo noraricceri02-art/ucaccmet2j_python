@@ -32,14 +32,34 @@ for i in splitted_date:
     if month not in sum_months_values:
         sum_months_values[month] = 0
         sum_months_values[month] += i['value']
-print(sum_months_values)
-     
-#saving to JASON
+    else:
+        sum_months_values[month]+=i['value']
 
+print(sum_months_values)
+
+values_list =list(sum_months_values.values())
+print(values_list)
+
+#calculating the total yearly precipitation for Seattle
+total_yearly_precipitation =0
+for monthly_precipitation in values_list:
+    total_yearly_precipitation = total_yearly_precipitation + monthly_precipitation
+print(total_yearly_precipitation)
+
+#calculating the relative monthly precipitation by dividing the
+list_monthly_precipitation=[]
+for x in values_list:
+    relative_yearly_precipitation=x/total_yearly_precipitation
+    list_monthly_precipitation.append(relative_yearly_precipitation)
+print(list_monthly_precipitation)
+
+#saving to JASON
 precipitation['Seattle'] = {'station': 'GHCND:US1WAKG0038',
         'state': 'WA',
-        'total_monthly_precipitation': sum_months_values
+        'total_monthly_precipitation': values_list,
+        'relative_monthly_precipitation' : list_monthly_precipitation
          }
-    
+
 with open('results.json', 'w', encoding='utf-8') as file:
     json.dump(precipitation, file, indent=4)
+
