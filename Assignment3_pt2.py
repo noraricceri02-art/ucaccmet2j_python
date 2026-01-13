@@ -9,16 +9,22 @@ city_dictionary={'Cincinnati':{'station': 'GHCND:USW00093814', 'state': 'OH'},
                  'San Diego':{'station': 'GHCND:US1CASD0032', 'state': 'CA'}
 }
 
+#I am calculating the overall amount of precipitation
+overall_precipitation=0
+for value in data:
+    overall_precipitation= overall_precipitation + value['value']
+#print(overall_precipitation)
+
 precipitation={}
 relative_yearly_precipitation=[]
 
 for city_name in city_dictionary:
-    #selecting only the Seattle data
+    #selecting all 4 cityes
     precipitations_per_city = []
     for row in data:
         if row['station'] == city_dictionary[city_name]['station']:
             precipitations_per_city.append(row)
-    print(precipitations_per_city)
+    #print(precipitations_per_city)
 
     #Here I want to select the month for each 'date'
     #I'm selecting the string for 'date' in the original dictionary and separating it by '-'. Then I select the second element of that string i.e the month number
@@ -45,7 +51,6 @@ for city_name in city_dictionary:
             sum_months_values[month]+=i['value']
 
     #print(sum_months_values)
-
     values_list =list(sum_months_values.values())
     #print(values_list)
 
@@ -55,20 +60,25 @@ for city_name in city_dictionary:
         total_yearly_precipitation = total_yearly_precipitation + monthly_precipitation
     #print(total_yearly_precipitation)
 
-    #calculating the relative monthly precipitation by dividing the
+    #calculating the relative monthly precipitation 
     list_monthly_precipitation=[]
     for x in values_list:
         relative_yearly_precipitation=x/total_yearly_precipitation
         list_monthly_precipitation.append(relative_yearly_precipitation)
     #print(list_monthly_precipitation)
 
+    #calculating the relative yearly precipitation 
+    relative_precipitation_year=total_yearly_precipitation/overall_precipitation
+    
     #saving to JASON
     precipitation[city_name] = {'station': city_dictionary[city_name]['station'],
             'state': city_dictionary[city_name]['state'],
             'total_monthly_precipitation': values_list,
-            'relative_monthly_precipitation' : list_monthly_precipitation
+            'relative_monthly_precipitation' : list_monthly_precipitation,
+            'relative_yearly_precipitation': relative_precipitation_year
             }
 
 with open('results.json', 'w', encoding='utf-8') as file:
     json.dump(precipitation, file, indent=4)
+
 
